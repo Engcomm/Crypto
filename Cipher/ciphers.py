@@ -1,5 +1,5 @@
 '''
-	ciphers.py
+	Assignment name: ciphers.py
     
     A python command-line program to encrypt or deccrypt a text file.
     
@@ -25,18 +25,18 @@
 import argparse
 import click
 
-class Cipher(object):
-	""" The base class for all Ciphers """
-    pass
-
 """ 
     In the Caesar cipher, "each letter of the text is replaced
     by the letter which stands a certain number of places
     before or after it in the alphabet".
     Sources:
-        # "Manual of Cryptography", 1911, page 28
+        "Manual of Cryptography", 1911, page 28
+        http://practicalcryptography.com/ciphers/caesar-cipher/
+        https://learncryptography.com/classical-encryption/caesar-cipher
+        https://www.xarg.org/tools/caesar-cipher/
+        http://crypto.interactive-maths.com/caesar-shift-cipher.html
 """
-class Caesar_cipher(Cipher):
+class Caesar_cipher(object):
 
 	def __init__(self, key):
 		self.key = key
@@ -87,11 +87,42 @@ class Caesar_cipher(Cipher):
 	
 	Sources:
 		"The Mathamatical Theory of Cryptography", 1945, pages 31-32
+		https://www.simonsingh.net/The_Black_Chamber/substitutioncrackingtool.html
+		http://practicalcryptography.com/ciphers/simple-substitution-cipher/
+		http://rumkin.com/tools/cipher/substitution.php
+		https://www.britannica.com/topic/substitution-cipher
 
 """
-def simple_substitution_cipher():
+class simple_substitution_cipher():
 
-	key = []
+	key = 3
+
+	def __init__(self, key):
+		self.key = key
+
+	def encrypt(self, input_file, output_file):
+		""" 
+			Encrypt a simple substitution cipher.
+		"""
+		key = self.getKey()
+		for l in input_file:
+			result = l
+			if l.isalpha():
+				l = l.upper()
+				result = chr(ord(l) + key)
+			file.write(result)
+
+	def decrypt(self, cipher_text):
+		""" 
+			Decrypt a simple substitution cipher.
+		"""
+		ct = self.preprocess(cipher_text)
+		plain_text = []
+
+		for symbol in ct:
+			plain_text.append( self.decode_dict[ symbol ] )
+
+		return ''.join(plain_text)
 
 
 """
@@ -100,8 +131,43 @@ def simple_substitution_cipher():
 	one letter per row, with the plaintext letters at the top of the square, 
 	the key letters at the side, and the cipher letter inside."
 
+	Sources:
+	        "Friedman Lectures on Cryptography", 1965, page 29
+	        https://inventwithpython.com/hacking/chapter19.html
+	        https://www.geeksforgeeks.org/vigenere-cipher/
+	        http://www.codingalpha.com/polyalphabetic-cipher-c-program/
+	        https://www.khanacademy.org/computing/computer-science/cryptography/crypt/p/polyalphabetic-exploration
+
 """
-# def poly_alphabetic_cipher():
+class poly_alphabetic_cipher():
+
+	def __init__(self):
+        None
+
+	def encrypt(self, plaintext, key):
+		key = key.upper().replace(' ', '')
+		plaintext = plaintext.upper().replace(' ', '')
+		ciphertext = ''
+		j = 0
+		for i in range(len(plaintext)):
+			ciphertext += chr((((ord(key[j]) - 65) + (ord(plaintext[i])) - 65) % 26) + 65)
+			i += 1
+			j += 1
+			if j >= len(key):
+				j = 0
+		return ciphertext
+
+	def decrypt(self, ciphertext, key):
+		key = key.upper().replace(' ', '')
+		plaintext = ''
+		j = 0
+		for i in range(len(ciphertext)):
+			plaintext += chr((((ord(ciphertext[i]) - 65) - (ord(key[j]) - 65)) % 26) + 65)
+			i += 1
+			j += 1
+			if j >= len(key):
+				j = 0
+		return plaintext
 
 
 """
@@ -111,10 +177,27 @@ def simple_substitution_cipher():
 
 	Sources:
         "Manual of Cryptography", 1911, page 21.
+        http://crypto.interactive-maths.com/simple-transposition-ciphers.html
+        https://www.dcode.fr/transposition-cipher
+        https://inventwithpython.com/hacking/chapter8.html
+        https://www.tutorialspoint.com/cryptography_with_python/cryptography_with_python_transposition_cipher.htm
 
 """
-# def transposition_cipher():
+class transposition_cipher():
+	def split_len(seq, length):
+		return [seq[i:i + length] for i in range(0, len(seq), length)]
+	def encode(key, plaintext):
+		order = {
+			int(val): num for num, val in enumerate(key)
+			}
+	ciphertext = ''
 
+	for index in sorted(order.keys()):
+		for part in split_len(plaintext, len(key)):
+			try:ciphertext += part[order[index]]
+				except IndexError:
+					continue
+		return ciphertext
 
 
 
@@ -128,6 +211,9 @@ def simple_substitution_cipher():
         Cipher taken from:
           "Manual of Cryptography", 1911, page 21-22.
           http://marshallfoundation.org/library/wp-content/uploads/sites/16/2014/09/WFFvol05watermark.pdf
+          http://crypto.interactive-maths.com/rail-fence-cipher.html
+          https://www.geeksforgeeks.org/rail-fence-cipher-encryption-decryption/
+          https://www.daniweb.com/programming/software-development/threads/78106/how-to-create-a-zig-zag-encryption
 """
 class zigzag_cipher():
 
@@ -226,7 +312,7 @@ def Dist(dist_name, input_file, output_file):
 
     dist.analyze(text)
 
-output_file.write(dist.to_readable())
+	output_file.write(dist.to_readable())
 
 if __name__ == '__main__':
 	
